@@ -37,7 +37,7 @@ def parse_format(text):
 
 def download(name, parts_url):
     current_section = None
-    file = None
+    fp = None
     last_downloaded = -1
 
     while True:
@@ -50,16 +50,16 @@ def download(name, parts_url):
         for sequence, url in enumerate(response[10::3], sequence_start):
             if sequence > last_downloaded:
                 if sequence % 5 == 0:
-                    if file:
-                        file.close()
-                    file = open(f"{name}/{sequence//5:.0f}.ts", "wb")
+                    if fp:
+                        fp.close()
+                    fp = open(f"{name}/{sequence//5:.0f}.ts", "wb")
                     current_section = sequence // 5
 
                     logging.info(f"New {sequence}")
-                    file.write(session.get(url).content)
+                    fp.write(session.get(url).content)
                 elif sequence // 5 == current_section:
                     logging.info(f"Add {sequence}")
-                    file.write(session.get(url).content)
+                    fp.write(session.get(url).content)
                 last_downloaded = sequence
 
         time.sleep(10)
